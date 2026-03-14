@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video Degrader</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: linear-gradient(135deg, #0f0f1e 0%, #1a0033 50%, #330011 100%);
+      color: #fff;
+      font-family: 'Courier New', monospace;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .container { max-width: 600px; width: 100%; }
+    h1 { text-align: center; color: #ff00ff; margin-bottom: 30px; font-size: 2.5em; }
+    .box {
+      background: rgba(0,0,0,0.5);
+      border: 2px solid #00ffff;
+      border-radius: 10px;
+      padding: 30px;
+      margin-bottom: 20px;
+      backdrop-filter: blur(10px);
+    }
+    label {
+      display: block;
+      margin-bottom: 10px;
+      color: #ffff00;
+      font-weight: bold;
+    }
+    input[type="file"], input[type="range"] {
+      width: 100%;
+      margin-bottom: 15px;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #00ffff;
+      background: rgba(0,255,255,0.1);
+      color: #fff;
+    }
+    .quality-info {
+      background: rgba(255,0,255,0.1);
+      padding: 10px;
+      border-radius: 5px;
+      margin: 10px 0;
+      color: #ff00ff;
+      text-align: center;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #ff00ff;
+      color: black;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      font-size: 1em;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    button:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 0 20px #ff00ff; }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+    .status { text-align: center; margin-top: 10px; padding: 10px; border-radius: 5px; }
+    .success { color: #00ff00; background: rgba(0,255,0,0.1); }
+    .error { color: #ff0000; background: rgba(255,0,0,0.1); }
+    .loading { color: #ffff00; background: rgba(255,255,0,0.1); }
+    a { color: #00ff00; text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎬 VIDEO DEGRADER</h1>
+    
+    <div class="box">
+      <label>Upload seu vídeo:</label>
+      <input type="file" id="videoInput" accept="video/*">
+      
+      <label>Nível de Degradação:</label>
+      <input type="range" id="qualitySlider" min="1" max="8" value="5">
+      <div class="quality-info" id="qualityInfo">⚡ Qualidade: 5</div>
+      
+      <button id="degradeBtn" onclick="degrade()">⚡ DEGRADE AGORA</button>
+      <div class="status" id="status"></div>
+    </div>
+  </div>
+
+  <script>
+    const qualityNames = {
+      1: '🥔 POTATO (34KB)',
+      2: '🔊 CRISPY',
+      3: '🌊 UNDERWATER',
+      4: '📼 VHS',
+      5: '⚡ CURSED',
+      6: '🤖 AI BARF',
+      7: '👾 EXTREME',
+      8: '🎆 APOCALYPSE'
+    };
+
+    document.getElementById('qualitySlider').addEventListener('input', (e) => {
+      document.getElementById('qualityInfo').innerText = qualityNames[e.target.value];
+    });
+
+    async function degrade() {
+      const video = document.getElementById('videoInput').files[0];
+      const status = document.getElementById('status');
+      const btn = document.getElementById('degradeBtn');
+
+      if (!video) {
+        status.className = 'status error';
+        status.innerText = '❌ Escolha um vídeo!';
+        return;
+      }
+
+      const quality = document.getElementById('qualitySlider').value;
+      const formData = new FormData();
+      formData.append('video', video);
+      formData.append('quality', quality);
+
+      btn.disabled = true;
+      status.className = 'status loading';
+      status.innerText = '⏳ Processando... (pode levar tempo)';
+
+      try {
+        const res = await fetch('/degrade', { 
+          method: 'POST', 
+          body: formData 
+        });
+
+        const text = await res.text();
+        console.log('Resposta:', text);
+
+        let data;
+        try {
+          data = JSON.parse(text);
+        } catch (e) {
+          throw new Error('Erro no servidor: ' + text);
+        }
+        
+        if (data.success) {
+          status.className = 'status success';
+          status.innerHTML = `✅ Pronto! <a href="/download/${data.file}">⬇️ Baixar vídeo degradado</a>`;
+        } else {
+          status.className = 'status error';
+          status.innerText = '❌ Erro: ' + (data.error || 'Desconhecido');
+        }
+      } catch (err) {
+        console.error('Erro:', err);
+        status.className = 'status error';
+        status.innerText = '❌ Erro: ' + err.message;
+      }
+
+      btn.disabled = false;
+    }
+  </script>
+</body>
+</html>
