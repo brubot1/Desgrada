@@ -1,159 +1,674 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Video Degrader</title>
+  <title>Video Degrader - Transforme seus vídeos em memes</title>
+  
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #ff00ff;
+      --secondary: #00ffff;
+      --accent: #ffff00;
+      --dark: #0f0f1e;
+      --darker: #1a0033;
+      --danger: #ff0000;
+      --success: #00ff00;
+    }
+
     body {
-      background: linear-gradient(135deg, #0f0f1e 0%, #1a0033 50%, #330011 100%);
+      background: linear-gradient(135deg, var(--dark) 0%, var(--darker) 50%, #330011 100%);
       color: #fff;
-      font-family: 'Courier New', monospace;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Courier New', monospace;
       min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Efeito de fundo animado */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: 
+        radial-gradient(circle at 20% 50%, rgba(255, 0, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(0, 255, 255, 0.1) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 1;
+      animation: gradientShift 15s ease-in-out infinite;
+    }
+
+    @keyframes gradientShift {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.8; }
+    }
+
+    .container {
+      position: relative;
+      z-index: 10;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    /* Header */
+    header {
+      text-align: center;
+      margin-bottom: 50px;
+      animation: slideDown 0.6s ease-out;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .logo {
+      font-size: 3.5em;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--primary), var(--secondary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 10px;
+      letter-spacing: 2px;
+      text-shadow: 0 0 30px rgba(255, 0, 255, 0.3);
+    }
+
+    .tagline {
+      font-size: 1.1em;
+      color: var(--secondary);
+      font-weight: 300;
+      letter-spacing: 1px;
+      margin-bottom: 20px;
+    }
+
+    .subtitle {
+      font-size: 0.9em;
+      color: #888;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    /* Main Content */
+    .main-content {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 30px;
+      animation: fadeIn 0.8s ease-out 0.2s both;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .card {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(0, 255, 255, 0.2);
+      border-radius: 15px;
+      padding: 35px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .card:hover {
+      border-color: rgba(0, 255, 255, 0.4);
+      box-shadow: 0 8px 32px rgba(0, 255, 255, 0.1);
+    }
+
+    .card h2 {
+      color: var(--primary);
+      font-size: 1.2em;
+      margin-bottom: 25px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Upload Section */
+    .upload-area {
+      border: 2px dashed var(--secondary);
+      border-radius: 10px;
+      padding: 40px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-bottom: 25px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .upload-area:hover {
+      border-color: var(--primary);
+      background: rgba(255, 0, 255, 0.05);
+    }
+
+    .upload-area input {
+      display: none;
+    }
+
+    .upload-icon {
+      font-size: 3em;
+      margin-bottom: 10px;
+      display: block;
+      animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .upload-text {
+      color: var(--secondary);
+      font-weight: 600;
+      font-size: 1.1em;
+      margin-bottom: 5px;
+    }
+
+    .upload-subtext {
+      color: #888;
+      font-size: 0.9em;
+    }
+
+    .file-name {
+      color: var(--success);
+      margin-top: 15px;
+      padding: 10px;
+      background: rgba(0, 255, 0, 0.1);
+      border-radius: 5px;
+      font-size: 0.9em;
+    }
+
+    /* Slider Section */
+    .slider-section {
+      margin-bottom: 25px;
+    }
+
+    label {
+      display: block;
+      color: var(--accent);
+      font-weight: 600;
+      margin-bottom: 15px;
+      font-size: 0.95em;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .slider-container {
+      margin-bottom: 15px;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      height: 8px;
+      border-radius: 5px;
+      background: linear-gradient(90deg, 
+        #d4743e 0%, 
+        #ff6b6b 14%, 
+        #0066ff 28%, 
+        #8b0000 42%, 
+        #ff00ff 56%, 
+        #00ff00 70%, 
+        #ffff00 84%, 
+        #ff69b4 100%);
+      outline: none;
+      -webkit-appearance: none;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: white;
+      cursor: pointer;
+      box-shadow: 0 0 15px rgba(255, 0, 255, 0.8);
+      border: 2px solid var(--primary);
+      transition: all 0.2s;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+      box-shadow: 0 0 25px rgba(255, 0, 255, 1);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: white;
+      cursor: pointer;
+      box-shadow: 0 0 15px rgba(255, 0, 255, 0.8);
+      border: 2px solid var(--primary);
+      transition: all 0.2s;
+    }
+
+    .quality-info {
+      background: rgba(255, 0, 255, 0.1);
+      padding: 15px;
+      border-radius: 8px;
+      text-align: center;
+      border: 1px solid rgba(255, 0, 255, 0.3);
+    }
+
+    .quality-name {
+      font-size: 1.2em;
+      color: var(--primary);
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .quality-desc {
+      color: #888;
+      font-size: 0.85em;
+    }
+
+    /* Button */
+    button {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--primary), #ff0099);
+      color: black;
+      border: none;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 1em;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 20px;
+      gap: 10px;
     }
-    .container { max-width: 600px; width: 100%; }
-    h1 { text-align: center; color: #ff00ff; margin-bottom: 30px; font-size: 2.5em; }
-    .box {
-      background: rgba(0,0,0,0.5);
-      border: 2px solid #00ffff;
-      border-radius: 10px;
-      padding: 30px;
-      margin-bottom: 20px;
-      backdrop-filter: blur(10px);
+
+    button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(255, 0, 255, 0.5);
     }
-    label {
+
+    button:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* Status Messages */
+    .status {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 8px;
+      font-size: 0.95em;
+      display: none;
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .status.active {
       display: block;
-      margin-bottom: 10px;
-      color: #ffff00;
+    }
+
+    .status.loading {
+      background: rgba(255, 255, 0, 0.1);
+      border: 1px solid var(--accent);
+      color: var(--accent);
+    }
+
+    .status.success {
+      background: rgba(0, 255, 0, 0.1);
+      border: 1px solid var(--success);
+      color: var(--success);
+    }
+
+    .status.error {
+      background: rgba(255, 0, 0, 0.1);
+      border: 1px solid var(--danger);
+      color: var(--danger);
+    }
+
+    .status a {
+      color: inherit;
+      text-decoration: underline;
       font-weight: bold;
-    }
-    input[type="file"], input[type="range"] {
-      width: 100%;
-      margin-bottom: 15px;
-      padding: 10px;
-      border-radius: 5px;
-      border: 1px solid #00ffff;
-      background: rgba(0,255,255,0.1);
-      color: #fff;
-    }
-    .quality-info {
-      background: rgba(255,0,255,0.1);
-      padding: 10px;
-      border-radius: 5px;
-      margin: 10px 0;
-      color: #ff00ff;
-      text-align: center;
-    }
-    button {
-      width: 100%;
-      padding: 12px;
-      background: #ff00ff;
-      color: black;
-      border: none;
-      border-radius: 5px;
-      font-weight: bold;
-      font-size: 1em;
       cursor: pointer;
-      transition: all 0.3s;
     }
-    button:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 0 20px #ff00ff; }
-    button:disabled { opacity: 0.5; cursor: not-allowed; }
-    .status { text-align: center; margin-top: 10px; padding: 10px; border-radius: 5px; }
-    .success { color: #00ff00; background: rgba(0,255,0,0.1); }
-    .error { color: #ff0000; background: rgba(255,0,0,0.1); }
-    .loading { color: #ffff00; background: rgba(255,255,0,0.1); }
-    a { color: #00ff00; text-decoration: underline; }
+
+    .status a:hover {
+      opacity: 0.8;
+    }
+
+    /* Stats Sidebar */
+    .stats-card {
+      grid-column: 2;
+      grid-row: 1 / 3;
+    }
+
+    .stat-item {
+      margin-bottom: 20px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+    }
+
+    .stat-item:last-child {
+      border-bottom: none;
+    }
+
+    .stat-label {
+      color: #888;
+      font-size: 0.85em;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .stat-value {
+      font-size: 2em;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--accent), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .stat-icon {
+      font-size: 1.5em;
+      margin-right: 8px;
+    }
+
+    /* Logout Button */
+    .logout-btn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 8px 16px;
+      font-size: 0.85em;
+      background: rgba(255, 0, 0, 0.2);
+      border: 1px solid var(--danger);
+      color: var(--danger);
+      z-index: 100;
+    }
+
+    .logout-btn:hover {
+      background: rgba(255, 0, 0, 0.3);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .main-content {
+        grid-template-columns: 1fr;
+      }
+
+      .stats-card {
+        grid-column: 1;
+        grid-row: auto;
+      }
+
+      .logo {
+        font-size: 2.5em;
+      }
+
+      .card {
+        padding: 25px;
+      }
+
+      .logout-btn {
+        top: 10px;
+        right: 10px;
+        padding: 6px 12px;
+        font-size: 0.75em;
+      }
+    }
+
+    /* Loading spinner */
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
   </style>
 </head>
 <body>
+  <a href="/logout" class="logout-btn">🔓 SAIR</a>
+
   <div class="container">
-    <h1>🎬 VIDEO DEGRADER</h1>
-    
-    <div class="box">
-      <label>Upload seu vídeo:</label>
-      <input type="file" id="videoInput" accept="video/*">
-      
-      <label>Nível de Degradação:</label>
-      <input type="range" id="qualitySlider" min="1" max="8" value="5">
-      <div class="quality-info" id="qualityInfo">⚡ Qualidade: 5</div>
-      
-      <button id="degradeBtn" onclick="degrade()">⚡ DEGRADE AGORA</button>
-      <div class="status" id="status"></div>
+    <header>
+      <div class="logo">🎬 VIDEO DEGRADER</div>
+      <div class="tagline">Transforme seus vídeos em memes</div>
+      <div class="subtitle">Reduza qualidade, aumente a diversão</div>
+    </header>
+
+    <div class="main-content">
+      <!-- Upload Card -->
+      <div class="card">
+        <h2>⚡ Seu Vídeo</h2>
+
+        <label for="videoInput" class="upload-area" id="uploadArea">
+          <span class="upload-icon">📹</span>
+          <div class="upload-text">Clique ou arraste seu vídeo</div>
+          <div class="upload-subtext">MP4, WebM, Mov ou qualquer formato</div>
+          <input type="file" id="videoInput" accept="video/*">
+        </label>
+
+        <div class="file-name" id="fileName" style="display: none;"></div>
+
+        <!-- Degradation Slider -->
+        <div class="slider-section">
+          <label for="qualitySlider">Nível de Degradação</label>
+          <div class="slider-container">
+            <input type="range" id="qualitySlider" min="1" max="8" value="5">
+          </div>
+          <div class="quality-info">
+            <div class="quality-name" id="qualityName">⚡ CURSED</div>
+            <div class="quality-desc" id="qualityDesc">Digital chaos</div>
+          </div>
+        </div>
+
+        <!-- Degrade Button -->
+        <button id="degradeBtn" onclick="degrade()" style="margin-top: 25px;">
+          ⚡ DEGRADE AGORA
+        </button>
+
+        <!-- Status -->
+        <div class="status" id="status"></div>
+      </div>
+
+      <!-- Stats Card -->
+      <div class="card stats-card">
+        <h2>📊 Estatísticas</h2>
+
+        <div class="stat-item">
+          <span class="stat-label">👁️ Visitas</span>
+          <div class="stat-value"><span class="stat-icon">👀</span><span id="visitas">0</span></div>
+        </div>
+
+        <div class="stat-item">
+          <span class="stat-label">🎬 Vídeos</span>
+          <div class="stat-value"><span class="stat-icon">🎥</span><span id="videos">0</span></div>
+        </div>
+
+        <div class="stat-item">
+          <span class="stat-label">📦 Processado</span>
+          <div class="stat-value"><span class="stat-icon">💾</span><span id="tamanho">0</span>GB</div>
+        </div>
+      </div>
     </div>
   </div>
 
   <script>
-    const qualityNames = {
-      1: '🥔 POTATO (34KB)',
-      2: '🔊 CRISPY',
-      3: '🌊 UNDERWATER',
-      4: '📼 VHS',
-      5: '⚡ CURSED',
-      6: '🤖 AI BARF',
-      7: '👾 EXTREME',
-      8: '🎆 APOCALYPSE'
+    const qualityModes = {
+      1: { name: '🥔 POTATO', desc: '34 KB Master' },
+      2: { name: '🔊 CRISPY', desc: 'Ear destroyer' },
+      3: { name: '🌊 UNDERWATER', desc: 'Aquarium vibes' },
+      4: { name: '📼 VHS', desc: '2000s nostalgia' },
+      5: { name: '⚡ CURSED', desc: 'Digital chaos' },
+      6: { name: '🤖 AI BARF', desc: 'Matrix glitch' },
+      7: { name: '👾 EXTREME', desc: 'Seizure warning' },
+      8: { name: '🎆 APOCALYPSE', desc: '8K meme' }
     };
 
-    document.getElementById('qualitySlider').addEventListener('input', (e) => {
-      document.getElementById('qualityInfo').innerText = qualityNames[e.target.value];
+    const videoInput = document.getElementById('videoInput');
+    const uploadArea = document.getElementById('uploadArea');
+    const qualitySlider = document.getElementById('qualitySlider');
+    const degradeBtn = document.getElementById('degradeBtn');
+    const statusDiv = document.getElementById('status');
+
+    // Upload drag and drop
+    uploadArea.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadArea.style.background = 'rgba(255, 0, 255, 0.1)';
     });
 
-    async function degrade() {
-      const video = document.getElementById('videoInput').files[0];
-      const status = document.getElementById('status');
-      const btn = document.getElementById('degradeBtn');
+    uploadArea.addEventListener('dragleave', () => {
+      uploadArea.style.background = '';
+    });
 
+    uploadArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadArea.style.background = '';
+      const files = e.dataTransfer.files;
+      if (files[0]) {
+        videoInput.files = files;
+        updateFileName();
+      }
+    });
+
+    videoInput.addEventListener('change', updateFileName);
+
+    function updateFileName() {
+      if (videoInput.files[0]) {
+        const fileName = videoInput.files[0].name;
+        const fileSize = (videoInput.files[0].size / (1024 * 1024)).toFixed(2);
+        document.getElementById('fileName').textContent = `✓ ${fileName} (${fileSize}MB)`;
+        document.getElementById('fileName').style.display = 'block';
+      }
+    }
+
+    // Quality slider
+    qualitySlider.addEventListener('input', (e) => {
+      const quality = e.target.value;
+      const mode = qualityModes[quality];
+      document.getElementById('qualityName').textContent = mode.name;
+      document.getElementById('qualityDesc').textContent = mode.desc;
+    });
+
+    // Degrade function
+    async function degrade() {
+      const video = videoInput.files[0];
+      
       if (!video) {
-        status.className = 'status error';
-        status.innerText = '❌ Escolha um vídeo!';
+        showStatus('❌ Escolha um vídeo!', 'error');
         return;
       }
 
-      const quality = document.getElementById('qualitySlider').value;
+      const quality = qualitySlider.value;
       const formData = new FormData();
       formData.append('video', video);
       formData.append('quality', quality);
 
-      btn.disabled = true;
-      status.className = 'status loading';
-      status.innerText = '⏳ Processando... (pode levar tempo)';
+      degradeBtn.disabled = true;
+      showStatus('⏳ Processando... pode levar alguns minutos', 'loading');
+      degradeBtn.innerHTML = '<span class="spinner"></span> PROCESSANDO...';
 
       try {
-        const res = await fetch('/degrade', { 
-          method: 'POST', 
-          body: formData 
+        const res = await fetch('/degrade', {
+          method: 'POST',
+          body: formData
         });
 
         const text = await res.text();
-        console.log('Resposta:', text);
-
         let data;
+
         try {
           data = JSON.parse(text);
         } catch (e) {
-          throw new Error('Erro no servidor: ' + text);
+          throw new Error('Erro no servidor');
         }
-        
+
         if (data.success) {
-          status.className = 'status success';
-          status.innerHTML = `✅ Pronto! <a href="/download/${data.file}">⬇️ Baixar vídeo degradado</a>`;
+          showStatus(`✅ Pronto! <a href="/download/${data.file}">⬇️ Baixar (${data.size}KB)</a>`, 'success');
+          updateStats();
         } else {
-          status.className = 'status error';
-          status.innerText = '❌ Erro: ' + (data.error || 'Desconhecido');
+          showStatus('❌ Erro: ' + (data.error || 'Desconhecido'), 'error');
         }
       } catch (err) {
-        console.error('Erro:', err);
-        status.className = 'status error';
-        status.innerText = '❌ Erro: ' + err.message;
+        showStatus('❌ ' + err.message, 'error');
       }
 
-      btn.disabled = false;
+      degradeBtn.disabled = false;
+      degradeBtn.innerHTML = '⚡ DEGRADE AGORA';
     }
+
+    function showStatus(message, type) {
+      statusDiv.className = `status active ${type}`;
+      statusDiv.innerHTML = message;
+    }
+
+    // Update stats
+    async function updateStats() {
+      try {
+        const res = await fetch('/stats');
+        const data = await res.json();
+        document.getElementById('visitas').textContent = data.visitas;
+        document.getElementById('videos').textContent = data.videosProcessados;
+        document.getElementById('tamanho').textContent = data.megabytesProcessados;
+      } catch (err) {
+        console.log('Stats não disponível');
+      }
+    }
+
+    // Initial load and periodic update
+    updateStats();
+    setInterval(updateStats, 5000);
   </script>
 </body>
 </html>

@@ -7,6 +7,17 @@ const { spawn } = require('child_process');
 const app = express();
 const PORT = 3000;
 
+// Carregar stats
+let stats = { visitas: 0, videosProcessados: 0, bytesProcessados: 0 };
+
+if (fs.existsSync('stats.json')) {
+  stats = JSON.parse(fs.readFileSync('stats.json', 'utf8'));
+}
+
+// Salvar stats
+const saveStats = () => {
+  fs.writeFileSync('stats.json', JSON.stringify(stats, null, 2));
+};
 if (!fs.existsSync('uploads')) {
   fs.mkdirSync('uploads');
 }
@@ -19,9 +30,10 @@ const upload = multer({
 app.use(express.static('public'));
 
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
+  if (req.session.autenticado) {
+    stats.visitas++;
+    saveStats();
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
 app.post('/degrade', upload.single('video'), (req, res) => {
   console.log('📹 Recebido video:', req.file.filename);
   
@@ -122,6 +134,10 @@ app.post('/degrade', upload.single('video'), (req, res) => {
     const stats = fs.statSync(outputPath);
     const sizeKB = (stats.size / 1024).toFixed(2);
     
+stats.videosProcessados++;
+stats.bytesProcessados += stats.size;
+saveStats();
+
     console.log(`✅ Vídeo DESTRUÍDO! Tamanho: ${sizeKB} KB`);
     res.json({ 
       success: true, 
@@ -150,7 +166,14 @@ app.get('/download/:file', (req, res) => {
     fs.unlink(filePath, () => {});
   });
 });
-
+// Rota de stats (SEM autenticação, pra mostrar no site)
+app.get('/stats', (req, res) => {
+  res.json({
+    visitas: stats.visitas,
+    videosProcessados: stats.videosProcessados,
+    megabytesProcessados: (stats.bytesProcessados / (1024 * 1024)).toFixed(2)
+  });
+});
 app.listen(PORT, () => {
   console.log(`\n✅ VIDEO MEME DESTROYER ATIVO!\n`);
   console.log(`📱 http://localhost:3000\n`);
