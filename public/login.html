@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video Degrader - Login</title>
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: linear-gradient(135deg, #0f0f1e 0%, #1a0033 50%, #330011 100%);
+      color: #fff;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Courier New', monospace;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Efeito de fundo animado */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: 
+        radial-gradient(circle at 20% 50%, rgba(255, 0, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(0, 255, 255, 0.1) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 1;
+      animation: gradientShift 15s ease-in-out infinite;
+    }
+
+    @keyframes gradientShift {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.8; }
+    }
+
+    .login-container {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      max-width: 400px;
+      padding: 40px;
+    }
+
+    .login-card {
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(0, 255, 255, 0.2);
+      border-radius: 15px;
+      padding: 40px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      animation: slideUp 0.6s ease-out;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .logo {
+      font-size: 2.5em;
+      font-weight: 900;
+      background: linear-gradient(135deg, #ff00ff, #00ffff, #ffff00);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-align: center;
+      margin-bottom: 10px;
+      letter-spacing: 2px;
+    }
+
+    .tagline {
+      text-align: center;
+      color: #00ffff;
+      font-size: 0.95em;
+      margin-bottom: 30px;
+      font-weight: 300;
+      letter-spacing: 1px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      color: #ffff00;
+      font-weight: 600;
+      margin-bottom: 10px;
+      font-size: 0.9em;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    input[type="password"] {
+      width: 100%;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      border-radius: 8px;
+      color: #fff;
+      font-family: inherit;
+      font-size: 1em;
+      transition: all 0.3s ease;
+    }
+
+    input[type="password"]:focus {
+      outline: none;
+      border-color: #ff00ff;
+      background: rgba(255, 0, 255, 0.05);
+      box-shadow: 0 0 15px rgba(255, 0, 255, 0.3);
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, #ff00ff, #ff0099);
+      color: black;
+      border: none;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 1em;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(255, 0, 255, 0.5);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    .info {
+      text-align: center;
+      color: #888;
+      font-size: 0.85em;
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(0, 255, 255, 0.2);
+    }
+
+    .error-message {
+      display: none;
+      background: rgba(255, 0, 0, 0.1);
+      border: 1px solid #ff0000;
+      color: #ff0000;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 0.9em;
+    }
+
+    .error-message.show {
+      display: block;
+      animation: shake 0.3s ease-in-out;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-card">
+      <div class="logo">🎬 VIDEO DEGRADER</div>
+      <div class="tagline">Transforme seus vídeos em memes</div>
+
+      <form id="loginForm" onsubmit="handleLogin(event)">
+        <div class="error-message" id="errorMessage"></div>
+
+        <div class="form-group">
+          <label for="senha">🔑 Senha</label>
+          <input type="password" id="senha" name="senha" placeholder="Digite a senha" autofocus required>
+        </div>
+
+        <button type="submit">🚀 ENTRAR</button>
+      </form>
+
+      <div class="info">
+        Digite a senha para acessar o degradador de vídeos
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function handleLogin(event) {
+      event.preventDefault();
+      
+      const senha = document.getElementById('senha').value;
+      const errorDiv = document.getElementById('errorMessage');
+      
+      if (!senha) {
+        errorDiv.textContent = '❌ Digite a senha!';
+        errorDiv.classList.add('show');
+        return;
+      }
+
+      const form = new FormData();
+      form.append('senha', senha);
+
+      fetch('/login', {
+        method: 'POST',
+        body: form
+      })
+      .then(res => {
+        if (res.ok) {
+          window.location.href = '/';
+        } else {
+          errorDiv.textContent = '❌ Senha incorreta!';
+          errorDiv.classList.add('show');
+          document.getElementById('senha').value = '';
+          document.getElementById('senha').focus();
+        }
+      })
+      .catch(err => {
+        errorDiv.textContent = '❌ Erro ao conectar: ' + err.message;
+        errorDiv.classList.add('show');
+      });
+    }
+  </script>
+</body>
+</html>
