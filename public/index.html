@@ -657,7 +657,9 @@
     // Update stats
     async function updateStats() {
       try {
-        const res = await fetch('/stats');
+        const res = await fetch('/stats', {
+  credentials: 'include'
+});
         const data = await res.json();
         document.getElementById('visitas').textContent = data.visitas;
         document.getElementById('videos').textContent = data.videosProcessados;
