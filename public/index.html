@@ -621,9 +621,10 @@
 
       try {
         const res = await fetch('/degrade', {
-          method: 'POST',
-          body: formData
-        });
+  method: 'POST',
+  credentials: 'include',
+  body: formData
+});
 
         const text = await res.text();
         let data;
